@@ -65,6 +65,8 @@ excalidraw-monorepo/
 
 Project agent skills live under [`.agents/skills/`](.agents/skills/). Each skill is a directory with a `SKILL.md` (and may include `scripts/`, `references/`, or other support files). Use the skill that matches the task; follow its workflows and project constraints (especially `actionManager` and the canvas pipeline).
 
+**Workshop / verification:** for **polishing**, **imageoptimize**, and **excalidraw-ui-architecture**, see the “with vs without” tables and the shared script in [dev-docs/docs/introduction/agent-skills.mdx](dev-docs/docs/introduction/agent-skills.mdx) (Docusaurus: **Introduction → Agent skills**). From the repo root, run `bash scripts/verify-agent-skills.sh` (fast) or `bash scripts/verify-agent-skills.sh --full` (adds `yarn test:code` and `yarn test:typecheck`).
+
 | Skill | Use when |
 |--------|----------|
 | `creating-excalidraw-components` | Adding or changing React UI (panels, dialogs, toolbars) with Excalidraw’s naming, props, and test patterns. |

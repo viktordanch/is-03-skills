@@ -50,3 +50,8 @@ description: >-
 
 - AppState narrowing — [references/appstate-prop-minimizer.md](references/appstate-prop-minimizer.md)
 - Layer split — [references/extract-canvas-ui-boundaries.md](references/extract-canvas-ui-boundaries.md)
+
+## Documentation and verification
+
+- **With vs without:** See the `excalidraw-ui-architecture` section in `dev-docs/docs/introduction/agent-skills.mdx`. It compares using this skill to ad hoc refactors that ignore layer boundaries.
+- **Verify:** from repo root, `bash scripts/verify-agent-skills.sh` runs both helper scripts and checks their output; no Yarn required for that part. Use `bash scripts/verify-agent-skills.sh --full` to include the same Yarn checks as the polishing skill.

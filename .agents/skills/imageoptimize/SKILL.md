@@ -50,3 +50,8 @@ When reporting results, include:
 2. before/after sizes
 3. total reduction percentage
 4. any quality-impact notes
+
+## Documentation and verification
+
+- **With vs without:** See the `imageoptimize` section in `dev-docs/docs/introduction/agent-skills.mdx`.
+- **Verify:** from repo root, `bash scripts/verify-agent-skills.sh` reports which optional CLIs are installed (`oxipng`, `jpegoptim`, and so on). Use `bash scripts/verify-agent-skills.sh --full` if you also want the same Yarn checks as the polishing skill.

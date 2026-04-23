@@ -48,3 +48,8 @@ Respond with:
 - Do not add new dependencies without explicit approval.
 - Do not perform broad refactors unless requested.
 - Do not change public behavior during a polish pass unless fixing a bug.
+
+## Documentation and verification
+
+- **With vs without:** See the polishing section in `dev-docs/docs/introduction/agent-skills.mdx` (also published under **Introduction → Agent skills** in the dev docs).
+- **Verify:** from repo root, `bash scripts/verify-agent-skills.sh --full` runs `yarn test:code` and `yarn test:typecheck` as part of the shared script.

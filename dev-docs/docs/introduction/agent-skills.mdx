@@ -1,0 +1,103 @@
+---
+title: Agent skills
+---
+
+# Agent skills (workshop)
+
+This monorepo ships optional **agent skills** under the `.agents/skills/` directory (repository root). Each skill is a `SKILL.md` plus optional `scripts/` and `references/`. They guide assistants toward Excalidraw-specific constraints (`actionManager`, canvas pipeline) and consistent workflows.
+
+This page documents **using a skill** versus **not using it** (typical failure modes) and how to **verify** behavior. For the skill index, see the **Skills** section in the repository root `AGENTS.md`.
+
+## Verifying all three
+
+From the **repository root**:
+
+```bash
+# Fast (default): helper scripts + optional image-CLI check; no Yarn
+bash scripts/verify-agent-skills.sh
+
+# Full: also runs the polishing skill checks
+bash scripts/verify-agent-skills.sh --full
+```
+
+- **Default** runs in seconds: the two `excalidraw-ui-architecture` shell scripts, and reports which image tools (`oxipng`, and so on) are on your `PATH`.
+- **`--full`** additionally runs `yarn test:code` and `yarn test:typecheck` as recommended by the **polishing** skill.
+
+---
+
+## `polishing`
+
+| | **With the skill** | **Without the skill (typical risk)** |
+|---|--------------------|--------------------------------------|
+| Scope | Re-read the diff, fix naming and duplication only where it helps handoff, **preserve behavior**. | “Cleanup” rewrites that change edge-case behavior, or broad refactors unrelated to the request. |
+| Architecture | Keep updates via `actionManager.dispatch()`, no new global state libraries, canvas stays on the existing pipeline. | Introducing Redux-style patterns, or pushing drawing into React. |
+| Checks | Run the checks listed in the skill: `yarn test:code`, `yarn test:typecheck`, and tests for touched code (`yarn test:app` or targeted). | Guessing; skipping `test:typecheck` and shipping type errors. |
+| Response | Report what was improved, what was verified, and residual risk. | Vague “done” with no test mention. |
+
+**How to test usage**
+
+- With skill: after edits, run at least:
+  - `yarn test:code`
+  - `yarn test:typecheck`
+  - and `yarn test:app` or a targeted file when the polished area is covered.
+- Without skill (contrast run): the same code path but skip the architecture bullets — you should *not* do this in production; it only illustrates why the skill exists.
+
+```bash
+yarn test:code
+yarn test:typecheck
+```
+
+**Source:** repo path `.agents/skills/polishing/SKILL.md`
+
+---
+
+## `imageoptimize`
+
+| | **With the skill** | **Without the skill (typical risk)** |
+|---|--------------------|--------------------------------------|
+| Baseline | Record sizes before/after; prefer lossless first, then lossy with an explicit quality trade-off. | Blind recompression that crushes text or UI clarity. |
+| Tooling | Use documented CLI tools (`oxipng`, `jpegoptim`, `cwebp`, `svgo` on Linux) and deterministic flags. | Random online compressors, new npm image deps "for convenience", or aspect-ratio changes. |
+| Artifacts | Visually check sensitive regions after lossy steps. | Shipping banding or illegible small text. |
+| Report | List files, before/after bytes, percent saved, and quality notes. | "Optimized" with no numbers. |
+
+**How to test usage**
+
+- With skill: pick a test PNG in the repo, copy to `/tmp`, run `oxipng -o 4 --strip safe` (or the skill’s JPEG/WebP flow), compare `ls -l` and open both in an image viewer.
+- Without skill: e.g. only resizing or converting without measuring — contrast shows why the skill insists on **before/after size** and **guardrails**.
+
+**Optional tools (Ubuntu):** `sudo apt install -y oxipng jpegoptim webp svgo` when you need them.
+
+**Source:** repo path `.agents/skills/imageoptimize/SKILL.md`
+
+---
+
+## `excalidraw-ui-architecture`
+
+| | **With the skill** | **Without the skill (typical risk)** |
+|---|--------------------|--------------------------------------|
+| AppState | Narrow props at the boundary; pass slices or derived values; read `references/appstate-prop-minimizer.md`. | Pushing full `AppState` into every leaf, or new external stores "to simplify". |
+| Canvas vs UI | Split React chrome from `scene/`, `renderer/`, and element math; read `references/extract-canvas-ui-boundaries.md`. | `react-konva` / ad hoc canvas in components, or scene logic inside large JSX files. |
+| State | All updates through `actionManager.dispatch()`. | New global state libraries to avoid prop work. |
+| Discovery | Run the shipped shell scripts to find hot spots. | Guessing which files to refactor. |
+
+**How to test usage** (from repo root):
+
+```bash
+bash .agents/skills/excalidraw-ui-architecture/scripts/appstate-prop-minimizer.sh packages/excalidraw/components
+bash .agents/skills/excalidraw-ui-architecture/scripts/extract-canvas-ui-boundaries.sh packages/excalidraw/components/App.tsx
+```
+
+- **With skill:** you should see sorted `appState` hit counts and, for the boundary script, `App.tsx` listed with import lines for scene/math/renderer when the heuristic matches.
+- **Without skill:** no systematic list — refactors are easier to do in the wrong layer.
+
+After refactors, run `yarn test:typecheck` and relevant tests.
+
+**Source:** repo path `.agents/skills/excalidraw-ui-architecture/SKILL.md`
+
+---
+
+## File paths (repo)
+
+- Skill definitions: `.agents/skills/<name>/SKILL.md`
+- Verification script: `scripts/verify-agent-skills.sh`
+- This page: `dev-docs/docs/introduction/agent-skills.mdx`
