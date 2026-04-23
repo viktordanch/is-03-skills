@@ -63,8 +63,11 @@ excalidraw-monorepo/
 
 ## Skills
 
-<!-- Add your Agent Skills here during the workshop -->
+Project agent skills live under [`.agents/skills/`](.agents/skills/). Each skill is a directory with a `SKILL.md` (and may include `scripts/`, `references/`, or other support files). Use the skill that matches the task; follow its workflows and project constraints (especially `actionManager` and the canvas pipeline).
 
-Available skills in this project:
-
-- **creating-excalidraw-components** (`.agents/skills/`) — Create React components following Excalidraw's patterns and conventions
+| Skill | Use when |
+|--------|----------|
+| `creating-excalidraw-components` | Adding or changing React UI (panels, dialogs, toolbars) with Excalidraw’s naming, props, and test patterns. |
+| `excalidraw-ui-architecture` | Narrowing `AppState` / prop surfaces, or splitting files that mix React UI with scene/renderer/canvas concerns; includes `appstate-prop-minimizer` and `extract-canvas-ui-boundaries` helper scripts. |
+| `imageoptimize` | Compressing, converting, or resizing web images (PNG, JPEG, WebP, SVG) with quality in mind. |
+| `polishing` | Finishing a change before handoff: cleanup, checks, and merge-ready quality pass without new features. |
